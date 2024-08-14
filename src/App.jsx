@@ -1,67 +1,89 @@
-import React, { useState } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-
-const initialCharacters = [
-  { id: "gray", name: "Gray Goodspeed" },
-  { id: "cat", name: "Cat Good" },
-  { id: "KVW", name: "KVWx" },
-  { id: "MONOCAKE", name: "MONOCAKEd" },
-];
+import React, { useRef, useState } from "react";
+import "./App.css";
+import InputField from "./components/InputField";
+import TodoList from "./components/TodoList";
+import { DragDropContext } from "react-beautiful-dnd";
+import { SiTrueup } from "react-icons/si";
 
 const App = () => {
-  const [characters, setCharacters] = useState(initialCharacters);
+  const [todo, setTodo] = useState({
+    title: "",
+    isDone: false,
+  });
+  const [todos, setTodos] = useState([]);
+  const [completedTodos, setCompletedTodos] = useState([]);
+  // const inputRef = useRef(null);
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
+  const handleAdd = (e) => {
+    e.preventDefault();
 
-    const items = Array.from(characters);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    if (todo.title) {
+      const newTodo = {
+        id: Date.now(),
+        todo: todo.title,
+        isDone: todo.isDone,
+      };
+      setTodos([...todos, newTodo]);
+      setTodo({
+        title: "",
+        isDone: false,
+      });
+    }
+  };
 
-    setCharacters(items);
+  const onDragEnd = (result) => {
+    const { destination, source } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    let add;
+    let active = [...todos];
+    let complete = [...completedTodos];
+
+    // Source Logic
+    if (source.droppableId === "TodosList") {
+      add = active[source.index];
+      active.splice(source.index, 1);
+    } else {
+      add = complete[source.index];
+      complete.splice(source.index, 1);
+    }
+
+    // Destination Logic
+    if (destination.droppableId === "TodosList") {
+      active.splice(destination.index, 0, add);
+    } else {
+      complete.splice(destination.index, 0, add);
+    }
+
+    setCompletedTodos(complete);
+    setTodos(active);
   };
 
   return (
-    <div>
-      <header>
-        <h1>Final Characters</h1>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="characters">
-            {(provided) => (
-              <ul
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                style={{ padding: "0", margin: "0" }} // Adjust padding and margin
-              >
-                {characters.map((ele, index) => (
-                  <Draggable key={ele.id} draggableId={ele.id} index={index}>
-                    {(provided) => (
-                      <li
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        ref={provided.innerRef}
-                        style={{
-                          padding: "16px",
-                          marginBottom: "8px",
-                          backgroundColor: "#f4f4f4",
-                          border: "1px solid #ccc",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          ...provided.draggableProps.style, // Ensure draggable style
-                        }}
-                      >
-                        <h2>{ele.name}</h2>
-                      </li>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </ul>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </header>
-    </div>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="App"
+      
+      >
+        <h1 className="heading">Drag-and-Drop</h1>
+        <InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd} />
+        <TodoList
+          todos={todos}
+          setTodos={setTodos}
+          completedTodos={completedTodos}
+          setCompletedTodos={setCompletedTodos}
+        />
+      </div>
+    </DragDropContext>
   );
 };
 
