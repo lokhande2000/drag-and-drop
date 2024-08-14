@@ -1,9 +1,10 @@
 import React from "react";
 import SingleTodo from "./SingleTodo";
 import { Droppable } from "react-beautiful-dnd";
+// import './styles.css'
 
 const TodoList = ({ todos, setTodos, CompletedTodos, setCompletedTodos }) => {
-  
+  console.log(todos)
   return (
     <div className="container">
       <Droppable droppableId="TodosList">

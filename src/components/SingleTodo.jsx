@@ -6,6 +6,7 @@ import { Draggable } from "react-beautiful-dnd";
 const SingleTodo = ({ index, todo, todos, setTodos }) => {
   const [edit, setEdit] = useState(false);
   const [editTodo, setEditTodo] = useState(todo.todo);
+  
 
   const inputRef = useRef(null);
   useEffect(() => {
@@ -16,19 +17,22 @@ const SingleTodo = ({ index, todo, todos, setTodos }) => {
 
   const handleEdit = (e, id) => {
     e.preventDefault();
+    console.log("edit = > ", id)
     setTodos(
-      todos.map((item) => (item.id === id ? { ...item, todo: editTodo } : item))
+      todos?.map((item) => (item.id === id ? { ...item, todo: editTodo } : item))
     );
     setEdit(false);
   };
 
   const handleDelete = (id) => {
-    setTodos(todos.filter((item) => item.id !== id));
+    console.log("delete = > ", id)
+    setTodos(todos?.filter((item) => item.id !== id));
   };
 
   const handleDone = (id) => {
+    console.log("done = > ", id)
     setTodos(
-      todos.map((item) =>
+      todos?.map((item) =>
         item.id === id ? { ...item, isDone: !item.isDone } : item
       )
     );

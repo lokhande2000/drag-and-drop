@@ -4,6 +4,14 @@ import "./styles.css";
 const InputField = ({ todo, setTodo, handleAdd }) => {
   const inputRef = useRef(null);
 
+  // Update the state with the new value of the input field
+  const handleChange = (e) => {
+    setTodo({
+      ...todo,
+      title: e.target.value
+    });
+  };
+
   return (
     <form
       className="input"
@@ -15,9 +23,9 @@ const InputField = ({ todo, setTodo, handleAdd }) => {
       <input
         type="text"
         placeholder="Enter a Task"
-        value={todo}
+        value={todo.title}
         ref={inputRef}
-        onChange={(e) => setTodo(e.target.value)}
+        onChange={handleChange}
         className="input__box"
       />
       <button type="submit" className="input_submit">
